@@ -28,18 +28,18 @@ class App extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.searchQuery !== this.state.searchQuery) {
+    const { searchQuery, page } = this.state;
+
+    if (prevState.searchQuery !== searchQuery) {
+      this.searchImages(searchQuery, 1);
       this.setState({ page: 1 });
-      this.searchImages();
     }
-    if (prevState.page !== this.state.page) {
-      this.searchImages();
+    if (prevState.page !== page) {
+      this.searchImages(searchQuery, page);
     }
   }
 
-  searchImages() {
-    const { searchQuery, page } = this.state;
-
+  searchImages(searchQuery = '', page = 1) {
     if (searchQuery !== '') {
       this.setState({
         isLoading: true,
