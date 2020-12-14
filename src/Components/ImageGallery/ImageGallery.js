@@ -3,20 +3,14 @@ import ImageGalleryItem from '../ImageGalleryItem';
 import s from './ImageGallery.module.css';
 
 const ImageGallery = ({ images, toggleModal }) => {
-  const checkEvent = evt => {
-    if (evt.target !== evt.currentTarget) {
-      toggleModal({
-        status: true,
-        src: evt.target.dataset.imageurl,
-        alt: evt.target.alt,
-      });
-    }
-  };
-
   return (
-    <ul className={s.ImageGallery} onClick={checkEvent}>
+    <ul className={s.ImageGallery}>
       {images.map(image => (
-        <ImageGalleryItem image={image} key={image.id} />
+        <ImageGalleryItem
+          image={image}
+          key={image.id}
+          toggleModal={toggleModal}
+        />
       ))}
     </ul>
   );

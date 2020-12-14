@@ -16,7 +16,8 @@ class App extends Component {
     page: 1,
     isLoading: false,
     error: null,
-    emptyNotify: false,
+    notify: false,
+    message: '',
     showPopup: false,
     showButton: false,
     targetImage: null,
@@ -39,28 +40,40 @@ class App extends Component {
   searchImages() {
     const { searchQuery, page } = this.state;
 
-    this.setState({ isLoading: true });
+    if (searchQuery !== '') {
+      this.setState({
+        isLoading: true,
+        notify: false,
+      });
 
-    fetchImage(searchQuery, page)
-      .then(data => {
-        if (page === 1) {
-          this.setState({
-            totalHits: data.totalHits,
-            images: data.hits,
-          });
-        } else {
-          this.setState(prevState => ({
-            images: [...prevState.images, ...data.hits],
-          }));
-          window.scrollTo({
-            top: document.documentElement.scrollHeight,
-            behavior: 'smooth',
-          });
-        }
-        this.checkButtonAndNotify();
-      })
-      .catch(error => this.setState({ error }))
-      .finally(() => this.setState({ isLoading: false }));
+      fetchImage(searchQuery, page)
+        .then(data => {
+          if (page === 1) {
+            this.setState({
+              totalHits: data.totalHits,
+              images: data.hits,
+            });
+          } else {
+            this.setState(prevState => ({
+              images: [...prevState.images, ...data.hits],
+            }));
+            window.scrollTo({
+              top: document.documentElement.scrollHeight,
+              behavior: 'smooth',
+            });
+          }
+          this.checkButtonAndNotify();
+        })
+        .catch(error => this.setState({ error }))
+        .finally(() => this.setState({ isLoading: false }));
+    } else {
+      this.setState({
+        images: [],
+        showButton: false,
+        message: 'Please input search request',
+        notify: true,
+      });
+    }
   }
 
   onSubmit = value => {
@@ -83,9 +96,12 @@ class App extends Component {
     }
 
     if (!totalHits) {
-      this.setState({ emptyNotify: true });
+      this.setState({
+        message: 'Nothing was found. Try again.',
+        notify: true,
+      });
     } else {
-      this.setState({ emptyNotify: false });
+      this.setState({ notify: false });
     }
   };
 
@@ -108,7 +124,8 @@ class App extends Component {
       images,
       isLoading,
       error,
-      emptyNotify,
+      notify,
+      message,
       showPopup,
       targetImage,
       showButton,
@@ -124,7 +141,7 @@ class App extends Component {
         {images.length > 0 && (
           <ImageGallery images={images} toggleModal={this.toggleModal} />
         )}
-        {emptyNotify && <Notify message="Nothing was found. Try again." />}
+        {notify && <Notify message={message} />}
         {showPopup && (
           <Modal
             src={targetImage.src}

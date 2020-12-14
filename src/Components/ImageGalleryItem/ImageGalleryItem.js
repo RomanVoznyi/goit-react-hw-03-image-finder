@@ -1,14 +1,22 @@
 import React from 'react';
 import s from './ImageGalleryItem.module.css';
 
-const ImageGalleryItem = ({ image }) => {
+const ImageGalleryItem = ({ image, toggleModal }) => {
+  const onClick = () => {
+    toggleModal({
+      status: true,
+      src: image.largeImageURL,
+      alt: image.tags,
+    });
+  };
+
   return (
     <li className={s.ImageGalleryItem}>
       <img
+        className={s.image}
         src={image.webformatURL}
         alt={image.tags}
-        data-imageurl={image.largeImageURL}
-        className={s.image}
+        onClick={onClick}
       />
     </li>
   );
